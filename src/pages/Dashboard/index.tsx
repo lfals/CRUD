@@ -6,8 +6,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Input from '../../components/InputComponent';
+import { notifyError, notifySuccess } from '../../components/toasts';
 
 import {database} from '../../services/api'
+import addContatToList from '../../services/handleSubmitData';
 
 import { Title, Form, Contacts, Error, ContactHolder } from './styles'
 
@@ -17,13 +19,12 @@ const Dashboard = () => {
     const [inputError, setInputError] = useState('')
     const [contactList, setContactList] = useState<any[]>([])
 
-    const notify = () => toast.success("Contato adicionado");
 
     useEffect(()=> {
         const fetchData = async () => {
+            
             const dbRef = database.ref();
             dbRef.child("contacts").get().then((snapshot) => {
-
             if (snapshot.exists()) {
                 const contactObj = snapshot.val()
                 const contactHolder:any = []
@@ -46,22 +47,27 @@ const Dashboard = () => {
     },[contactList])
 
     async function handleAddContact(contactData: any, {reset}: any) {
-        if (!contactData.name) {
-            setInputError('Nome obrigatório')
-            return
-        }else if(!contactData.phone){
-            setInputError('Telefone obrigatório')
-            return
-        }
+        addContatToList(contactData).then(res => {
+            
+            if(!!res){
+                console.log(res);
+                res.forEach(error => {
+                    notifyError(error)
+                })
+                return
+            }
 
-        
-        const contactsRef = database.ref('contacts')        
-        contactsRef.push(contactData)
-        setContactList([...contactList, contactData])
-        setInputError('')
-        notify()
-        reset()
+            const contactsRef = database.ref('contacts')        
+            contactsRef.push(contactData)
+            setContactList([...contactList, contactData])
+            setInputError('')
+            notifySuccess('Contato Adicionado')
+            reset()
+    
 
+        })
+
+      
     }
 
     return (
@@ -74,7 +80,7 @@ const Dashboard = () => {
             <button type="submit">Adicionar</button>
         </Form>
 
-        { inputError && <Error>{inputError}</Error> }
+        {/* { inputError && <Error>{inputError}</Error> } */}
 
         <Contacts>
             {contactList.map(contact => (

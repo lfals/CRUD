@@ -11,6 +11,7 @@ import 'firebase/database'
   appId: "1:1066923521495:web:03e895a948eeb5ffe88792"
 };
 
+
 firebase.initializeApp(firebaseConfig)
 const database = firebase.database()
 export  {firebase, database}

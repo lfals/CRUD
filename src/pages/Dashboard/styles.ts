@@ -75,6 +75,25 @@ export const ContactHolder = styled(Link)`
         display: flex;
         align-items: center;
         transition: transform 0.2s;   
+        a{
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            transition: all 0.6s;
+            svg{
+                color: #cbcbd6;
+            }
+        }
+        a:hover{
+            background-color: #04d361;
+            svg{
+                color: #fff;
+            }
+        }
+
         & + a {
             margin-top:16px;
         }
@@ -122,10 +141,7 @@ export const Contacts = styled.div `
             margin-top: 4px;
         }
     }
-    svg {
-        margin-left: auto;
-        color: #cbcbd6;
-    }
+   
 
     
 

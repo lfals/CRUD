@@ -8,6 +8,9 @@ import { database } from "../../services/api";
 import Input from "../../components/InputComponent";
 
 import { DeleteContact, Form, Header, RepositoryInfo } from "./styles";
+import handleContact from "../../services/handleSubmitData";
+import { notifyError } from "../../components/toasts";
+import { ToastContainer } from "react-toastify";
 
 interface IContact {
     0:{
@@ -51,15 +54,25 @@ const Update = () =>{
     }
 
     async function handleUpdateContact(contactData: IContactData, {reset}: any) {
+        handleContact(contactData).then(res => {
+            if(!!res){
+                res.forEach(error => {
+                    notifyError(error)
+                })
+                return
+            }
+            
+            database.ref('contacts').child(params.id).update({
+                name: contactData.name,
+                phone: contactData.phone,
+                email: contactData.email,
+                address: contactData.address,
+            });
+            reset()
+            history.push(`/contact/${params.id}`);
+        })
         
-        database.ref('contacts').child(params.id).update({
-            name: contactData.name,
-            phone: contactData.phone,
-            email: contactData.email,
-            address: contactData.address,
-        });
-        reset()
-        history.push(`/contact/${params.id}`);
+        
 
     }
     
@@ -87,10 +100,6 @@ const Update = () =>{
                 console.error(error);
             });
             console.log(contact);
-            
-            
-            
-            
         }
         fetchData()
         
@@ -135,6 +144,7 @@ return(
         
     </RepositoryInfo>
     ) }
+    <ToastContainer />
     </>
 )
 }
